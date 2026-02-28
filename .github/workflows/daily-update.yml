@@ -6,6 +6,9 @@ on:
     - cron: '30 10 * * *'
   workflow_dispatch: # Allows manual triggering for testing
 
+permissions:
+  contents: write
+
 jobs:
   daily-commit:
     runs-on: ubuntu-latest
@@ -23,7 +26,6 @@ jobs:
           
       - name: Create daily update
         run: |
-          # Create or update the daily log file
           mkdir -p logs
           echo "Daily update - $(date '+%Y-%m-%d %H:%M:%S UTC')" >> logs/daily-activity.log
           echo "Workflow run: ${{ github.run_number }}" >> logs/daily-activity.log
@@ -32,5 +34,5 @@ jobs:
       - name: Commit and push changes
         run: |
           git add .
-          git commit -m "chore: automated daily update - $(date '+%Y-%m-%d')" || echo "No changes to commit"
+          git commit -m "chore: automated daily update - $(date '+%Y-%m-%d')"
           git push
