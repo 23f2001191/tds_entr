@@ -1,0 +1,36 @@
+name: Daily Repository Update
+
+on:
+  schedule:
+    # Runs daily at 10:30 AM UTC
+    - cron: '30 10 * * *'
+  workflow_dispatch: # Allows manual triggering for testing
+
+jobs:
+  daily-commit:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Configure git for 23f2001191@ds.study.iitm.ac.in
+        run: |
+          git config --global user.name "DevSync Automation"
+          git config --global user.email "23f2001191@ds.study.iitm.ac.in"
+          
+      - name: Create daily update
+        run: |
+          # Create or update the daily log file
+          mkdir -p logs
+          echo "Daily update - $(date '+%Y-%m-%d %H:%M:%S UTC')" >> logs/daily-activity.log
+          echo "Workflow run: ${{ github.run_number }}" >> logs/daily-activity.log
+          echo "---" >> logs/daily-activity.log
+          
+      - name: Commit and push changes
+        run: |
+          git add .
+          git commit -m "chore: automated daily update - $(date '+%Y-%m-%d')" || echo "No changes to commit"
+          git push
