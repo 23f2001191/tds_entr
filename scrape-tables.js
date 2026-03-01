@@ -1,16 +1,16 @@
 const { chromium } = require('playwright');
 
 const urls = [
-  'https://your-domain.com/seed/72',
-  'https://your-domain.com/seed/73',
-  'https://your-domain.com/seed/74',
-  'https://your-domain.com/seed/75',
-  'https://your-domain.com/seed/76',
-  'https://your-domain.com/seed/77',
-  'https://your-domain.com/seed/78',
-  'https://your-domain.com/seed/79',
-  'https://your-domain.com/seed/80',
-  'https://your-domain.com/seed/81'
+  'https://sanand0.github.io/tdsdata/js_table/?seed=72',
+  'https://sanand0.github.io/tdsdata/js_table/?seed=73',
+  'https://sanand0.github.io/tdsdata/js_table/?seed=74',
+  'https://sanand0.github.io/tdsdata/js_table/?seed=75',
+  'https://sanand0.github.io/tdsdata/js_table/?seed=76',
+  'https://sanand0.github.io/tdsdata/js_table/?seed=77',
+  'https://sanand0.github.io/tdsdata/js_table/?seed=78',
+  'https://sanand0.github.io/tdsdata/js_table/?seed=79',
+  'https://sanand0.github.io/tdsdata/js_table/?seed=80',
+  'https://sanand0.github.io/tdsdata/js_table/?seed=81'
 ];
 
 (async () => {
@@ -21,9 +21,11 @@ const urls = [
 
   for (const url of urls) {
     console.log(`\nProcessing ${url}...`);
-    await page.goto(url);
+    await page.goto(url, { waitUntil: 'networkidle' });
     
-    // Extract all numbers from all tables
+    // Wait a bit for JS tables to render
+    await page.waitForTimeout(2000);
+    
     const tableSum = await page.evaluate(() => {
       const tables = document.querySelectorAll('table');
       let sum = 0;
@@ -31,7 +33,8 @@ const urls = [
       tables.forEach(table => {
         const cells = table.querySelectorAll('td, th');
         cells.forEach(cell => {
-          const num = parseFloat(cell.textContent.trim());
+          const text = cell.textContent.trim().replace(/,/g, '');
+          const num = parseFloat(text);
           if (!isNaN(num)) {
             sum += num;
           }
@@ -41,7 +44,7 @@ const urls = [
       return sum;
     });
     
-    console.log(`Sum for ${url}: ${tableSum}`);
+    console.log(`Sum for seed ${url.split('=')[1]}: ${tableSum}`);
     grandTotal += tableSum;
   }
 
