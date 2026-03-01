@@ -18,6 +18,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
           
       - name: Configure git for 23f2001191@ds.study.iitm.ac.in
         run: |
@@ -35,4 +36,5 @@ jobs:
         run: |
           git add .
           git commit -m "chore: automated daily update - $(date '+%Y-%m-%d')"
+          git pull --rebase origin main
           git push
